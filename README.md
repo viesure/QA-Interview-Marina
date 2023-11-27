@@ -1,145 +1,56 @@
-# QA-Interview-Marina
-QA Interview assignment project for Marina
+# Project: MVP Weather Application API Tests & OpenWeatherMap Tests
+This project involves automated testing of the MVP Weather Application's API and the OpenWeatherMap website using Java, Selenium, RestAssured, Cucumber, and TestNG.
 
+## Project Structure
 
-## Weather 'application' overview
+- **SuiteListener.java**: TestNG listener implements the ISuiteListener interface to listen for suite completion events and it generates cucumber report.
+- **MVPWeatherRunner.java**: TestNG runner class runs Cucumber tests for the MVPWeatherAPI feature. It specifies feature file paths, glue code package, and report generation.
+- **OpenWeatherMapRunner.java**:  TestNG runner class that executes Cucumber tests for OpenWeatherMapTests.feature. It defines feature file paths, glue code package, and report generation.
+- **APIFields.java**: Holds constants and enums for API-related field names and values.
+- **MVPWeatherHelper.java**: Helper methods for API testing of the MVP Weather Application.
+- **MVPWeatherStepDefinitions.java**: Step definitions for the Cucumber scenarios related to MVP Weather Application API testing.
+- **OpenWeatherMapHelper.java**: Helper methods for UI testing of the OpenWeatherMap website using Selenium WebDriver.
+- **OpenWeatherMapStepDefinitions.java**: Step definitions for the Cucumber scenarios related to OpenWeatherMap website testing.
+- **MVPWeatherAPI.feature**: Cucumber feature file defining scenarios for API testing of the MVP Weather Application.
+- **OpenWeatherMapTests.feature**: Cucumber feature file defining scenarios for UI testing of the OpenWeatherMap website.
+- **config.properties**: Configuration file containing base URLs for the MVP Weather Application and OpenWeatherMap.
+- **pom.xml**: Maven project file listing dependencies and build configurations.
+- **testng.xml**: TestNG suite configuration file.
 
-You are assigned to a team which is developing weather related application's **MVP** backend.
-Your task is to create automated tests for the **API that the application will use**.
+# Running Tests
 
-The MVP app will use one API, that tells the weather conditions for a fixed city. (Condition, description, temperatures ...etc.).
+1. Pre-requisites:
 
-The API will return the following fields: `city`, `condition`, `icon`, `description` `conditionId` `tempInFahrenheit` and `tempInCelsius`
+- Java and Maven should be installed on the machine.
+- Chromedriver executable should be present in the 'drivers' folder.
 
+2. Execution:
 
-## Weather backend's acceptance criteria-s
+- To run all tests, execute the command:
+```mvn test```
+- TestNG XML file (testng.xml) controls the test execution.
 
-* The **city field** would give a fixed city name as a string
-* The **conditionID field** gives an ID of the current condition
+## Test Reports
+- Test reports are generated using Cucumber reporting (net.masterthought.cucumber.ReportBuilder).
+- Reports can be found in the target/cucumber-reports/cucumber-html-reports/overview-features.html directory after test execution.
 
-  | ID   | Value   |
-  | ---- | ------  |
-  | 1    | clear   |
-  | 2    | windy   |
-  | 3    | mist    |
-  | 4    | drizzle |
-  | 5    | dust    |
+You can view the [Cucumber Test Report here](/target/cucumber-reports/cucumber-html-reports/overview-features.html).
 
-* The **condition field** would tell the weather condition as a string based on condition id
-    * Can have the following values `clear`, `windy`, `mist`, `drizzle` and `dust`
-* The **icon field** gives a `png` type image (string) that correlates (same as) the current condition
-* The **weather object** contains the temperature in both Fahrenheit and Celsius
-    * The **tempInFahrenheit field** contains the current temperature in Fahrenheits
-        * Should have 0 digits
-    * The **tempInCelsius field** contains the current remperature in Celsius
-        * Should have 0 digits
-        * Calculated from the tempInFahrenheit field
-        * Uses normal rounding rules
-* The **description field** returns a description text of the current weather
-    * The description is a fixed text with a suffix
-    * The description suffix is calculated based on the temperature in celsius
-    * Calculation rules:
+# Test Report Summary
 
-| Rule            | Description   |
-| -------------   | ------------- |
-| celsius <= 0    | freezing      |
-| celsius < 10    | cold          |
-| celsius < 20    | mild          |
-| celsius < 25    | warm          |
-| celsius >= 25   | hot           |
+## Test Results
+The test suite executed a total of 42 tests. Unfortunately, there were 7 test failures reported during the execution.
 
+**Failures**
+- Please review 4 unique failures: 
+1. Verify icon field based on provided ConditionID = 4
+Actual Result: Icon value mismatch. Expected [drizzle.png] but found [drizzle.jpeg].
 
-### The API:
+2. Verify temperature in Celsius based on provided temperature in Fahrenheits = 75
+Actual Result: Temp in Celsius value is not as expected. Expected [24] but found [23].
 
-The base url of the API is: `base_url` = `https://backend-interview-tokio.tools.gcp.viesure.io`
-<br >**Eg.:** GET `https://backend-interview-tokio.tools.gcp.viesure.io/weather`
+3. Verify Description value based on Celsius Temperature == 10
+Actual Result: Description value mismatch. Expected [The weather is mild] but found [The weather is cold].
 
-**GET .../weather**
-* You can fetch the endpoint through  `{base_url}/weather` with the following data structure:
-```curl
-curl -X 'GET' \
-  '{base_url}/weather' \
-  -H 'accept: application/json'
-```
-```json
-{
-  "city"        : "Vienna",
-  "condition"   : "clear",
-  "icon"        : "clear.PNG",
-  "conditionId" : 1,
-  "description" : "The weather is mild",
-  "weather": {
-    "tempInFahrenheit" : 60,
-    "tempInCelsius"    : 15
-  }
-}
-```
-
-### Helper API-s
-
-You are also provided 2 helper API-s to be able to set the states for the GET weather API
-
-#### PUT .../weather/temp
-
-You can set the Fahrenheit temperature with this API, by sending an Integer
-* You can call the endpoint through  `{base_url}/weather/temp`
-```cURL
-curl -X 'PUT' \
-  '{base_url}/weather/temp' \
-  -H 'accept: */*' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "tempInFahrenheit": 17
-}'
-```
-#### PUT .../weather/condition
-
-You can set the Condition ID with this API, by sending an Integer
-* You can call the endpoint through  `{base_url}/weather/condition`
-```cURL
-curl -X 'PUT' \
-  '{base_url}/weather/condition' \
-  -H 'accept: */*' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "condition": 1
-}'
-```
-
-
-## Your task
-You need to create a test automation framework and implement test cases for the weather API (defined above)
-using **Cucumber,** **testng** and **Selenium** where needed
-* Define Cucumber scenarios
-* Use the following language, frameworks and technologies within the automation project:
-    * Java
-    * Selenium
-    * Maven and POM
-    * BDD and Executed cucumber tests.
-    * Reporting framework of your choice.
-    * You can add any other helper library if you wish
-* Create a README file with some informative description of your project
-    * Also include the results of the test report of your scenarios (in the readme)
-* Open a pull request to this project.
-
-## Bonus
-
-To also make use of selenium, test a few fields from `https://openweathermap.org/`
-
-#### Task1
-Verify the main page's search field contains correct placeholder text
-
-![Search](./resources/openweather_search_placeholder_autumn.png)
-
-#### Task2
-* Search for `Sydney`, and select `Sydney, AU` from the list
-* Verify the selected city's title is correct
-* Verify that the date shown is correct
-* Verify that the time shown is correct
-
-
-![City](./resources/openweather_search_city.png)
-
-
-## Next Step
-Our QA and Development team will review your task carefully and contact you as soon as possible.
+4. Verify Description value based on Celsius Temperature = 20
+Actual Result: Description value mismatch. Expected [The weather is warm] but found [The weather is ].
