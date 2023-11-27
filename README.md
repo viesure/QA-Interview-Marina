@@ -27,7 +27,7 @@ This project involves automated testing of the MVP Weather Application's API and
 2. Execution:
 
 - To run all tests, execute the command:
-```mvn clean test```
+```mvn test```
 - TestNG XML file (testng.xml) controls the test execution.
 
 ## Test Reports

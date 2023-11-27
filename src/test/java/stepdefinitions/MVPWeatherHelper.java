@@ -17,7 +17,7 @@ public class MVPWeatherHelper {
                 .body(params.toString())
                 .put(endpoint)
                 .then()
-                .statusCode(200);
+                .statusCode(APIFields.HTTP_STATUS_OK);
     }
 
     // Method to get condition value based on condition ID
@@ -26,19 +26,19 @@ public class MVPWeatherHelper {
         String conditionValue = "";
         switch(conditionIDAsInt){
             case 1:
-                conditionValue = APIFields.Condition.CLEAR.getConditionValue();
+                conditionValue = APIFields.Condition.clear.toString();
                 break;
             case 2:
-                conditionValue = APIFields.Condition.WINDY.getConditionValue();
+                conditionValue = APIFields.Condition.windy.toString();
                 break;
             case 3:
-                conditionValue = APIFields.Condition.MIST.getConditionValue();
+                conditionValue = APIFields.Condition.mist.toString();
                 break;
             case 4:
-                conditionValue = APIFields.Condition.DRIZZLE.getConditionValue();
+                conditionValue = APIFields.Condition.drizzle.toString();
                 break;
             case 5:
-                conditionValue = APIFields.Condition.DUST.getConditionValue();
+                conditionValue = APIFields.Condition.dust.toString();
                 break;
         }
         return conditionValue;
@@ -52,19 +52,21 @@ public class MVPWeatherHelper {
 
     // Method to get description based on temperature in Celsius
     public String getDescriptionBasedOnCelsius(int tempInCelsius) {
-        String description = "The weather is ";
+        StringBuilder description = new StringBuilder("The weather is ");
+    
         if (tempInCelsius <= 0) {
-            description += APIFields.Description.FREEZING.getDescriptionValue();
+            description.append(APIFields.Description.freezing.toString());
         } else if (tempInCelsius < 10) {
-            description +=  APIFields.Description.COLD.getDescriptionValue();
+            description.append(APIFields.Description.cold.toString());
         } else if (tempInCelsius < 20) {
-            description +=  APIFields.Description.MILD.getDescriptionValue();
+            description.append(APIFields.Description.mild.toString());
         } else if (tempInCelsius < 25) {
-            description +=  APIFields.Description.WARM.getDescriptionValue();
-        } else if(tempInCelsius >= 25){
-            description +=  APIFields.Description.HOT.getDescriptionValue();
+            description.append(APIFields.Description.warm.toString());
+        } else if (tempInCelsius >= 25) {
+            description.append(APIFields.Description.hot.toString());
         }
-        return description;
+    
+        return description.toString();
     }
 
     public void assertFieldStringValue(Response response, String fieldName, String expectedValue, String errorMessage) {
